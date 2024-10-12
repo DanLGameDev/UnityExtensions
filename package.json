@@ -1,0 +1,11 @@
+{
+  "name": "dgp.unityextensions",
+  "version": "1.0.6",
+  "displayName": "DGP Unity Extensions",
+  "description": "",
+  "unity": "2019.1",
+  "author": {
+    "name": "Daniel Loughmiller",
+    "url": "https://github.com/DanLGameDev/"
+  }
+}
