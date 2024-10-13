@@ -24,7 +24,6 @@ namespace DGP.UnityExtensions.Editor
             EditorGUI.BeginProperty(position, label, property);
 
             if (GetGuidParts(property).All(x => x != null)) {
-                //EditorGUI.SelectableLabel(position, BuildGuidString(GetGuidParts(property)));
                 EditorGUI.SelectableLabel(position, BuildGuidString(GetGuidParts(property)), EditorStyles.textArea);
             }
             else {

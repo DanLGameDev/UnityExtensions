@@ -1,0 +1,11 @@
+{
+    "name": "DGP.UnityExtensions.Editor.Tests",
+    "rootNamespace": "DGP.UnityExtensions.Editor.Tests",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "references":[ "GUID:9a5e67fcb88f9c04ab3ce43e2e2dcfea"]
+}

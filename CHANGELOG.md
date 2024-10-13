@@ -1,3 +1,8 @@
+## [1.1.2] - 2024-10-13
+### Changed
+- Cleaned up references
+- Added unit tests
+
 ## [1.1.1] - 2024-10-13
 ### Added
 - Added various helper classes
