@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace DGP.UnityExtensions
+namespace DGP.UnityExtensions.Extensions
 {
     public static class Vector2Extensions
     {
