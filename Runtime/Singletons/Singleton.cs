@@ -31,6 +31,7 @@ namespace DGP.UnityExtensions.Singletons
         
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
+            //noop
         }
 
         public void Dispose() {
