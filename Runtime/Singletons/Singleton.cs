@@ -11,7 +11,7 @@ namespace DGP.UnityExtensions.Singletons
         public static bool IsInitialized => _instance.IsValueCreated;
 
         private static void DestroyInstance() {
-            _instance?.Value.Dispose();
+            _instance?.Value?.Dispose();
             _instance = new Lazy<T>(() => new T());
         }
 
