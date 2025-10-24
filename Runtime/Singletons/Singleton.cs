@@ -5,14 +5,14 @@ namespace DGP.UnityExtensions.Singletons
 {
     public abstract class Singleton<T> : IDisposable where T : Singleton<T>, new()
     {
-        private static Lazy<T> _instance = new Lazy<T>(() => new T());
+        private static Lazy<T> instance = new Lazy<T>(() => new T());
 
-        public static T Instance => _instance.Value;
-        public static bool IsInitialized => _instance.IsValueCreated;
+        public static T Instance => instance.Value;
+        public static bool IsInitialized => instance.IsValueCreated;
 
         private static void DestroyInstance() {
-            _instance?.Value?.Dispose();
-            _instance = new Lazy<T>(() => new T());
+            instance?.Value?.Dispose();
+            instance = new Lazy<T>(() => new T());
         }
 
         protected Singleton() { }

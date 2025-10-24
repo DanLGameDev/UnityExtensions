@@ -16,11 +16,11 @@ namespace _DGP.Gizmos
             //keep only 2 largest components
             var absDirection = new Vector3(Mathf.Abs(direction.x), Mathf.Abs(direction.y), Mathf.Abs(direction.z));
             var maxComponent = Mathf.Max(absDirection.x, absDirection.y, absDirection.z);
-            if (absDirection.x == maxComponent)
+            if (Mathf.Approximately(absDirection.x, maxComponent))
                 direction = new Vector3(direction.x, 0, 0);
-            else if (absDirection.y == maxComponent)
+            else if (Mathf.Approximately(absDirection.y, maxComponent))
                 direction = new Vector3(0, direction.y, 0);
-            else if (absDirection.z == maxComponent)
+            else if (Mathf.Approximately(absDirection.z, maxComponent))
                 direction = new Vector3(0, 0, direction.z);
             
             var distanceAlongDirection = Vector3.Distance(origin, target) * 0.5f;
@@ -28,14 +28,10 @@ namespace _DGP.Gizmos
             var targetOffset = target + -direction * distanceAlongDirection;
 
             origin = origin + (direction * 0.125f);
-            //target = target + (-direction * 0.125f);
 
             UnityEngine.Gizmos.color = color;
             UnityEngine.Gizmos.DrawCube(origin,Vector3.one * .04f);
             UnityEngine.Gizmos.DrawSphere(target, 0.04f);
-            
-            
-            //Gizmos.DrawLine(origin, target);
             
 #if UNITY_EDITOR
             Handles.DrawBezier(origin, target, originOffset, targetOffset, color, null, width);

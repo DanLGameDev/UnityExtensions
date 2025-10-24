@@ -1,6 +1,6 @@
 using System;
 
-namespace DGP.UnityExtensions.Extensions
+namespace DGP.UnityExtensions
 {
     public static class GuidExtensions
     {

@@ -21,14 +21,17 @@ namespace DGP.UnityExtensions
 
         public static void EnableChildren(this Transform parent)
         {
-            parent.PerformActionOnChildren(child => child.gameObject.SetActive(true));
+            foreach (var child in parent.Children()) {
+                child.gameObject.SetActive(true);
+            };
         }
-        
+
         public static void DisableChildren(this Transform parent)
         {
-            parent.PerformActionOnChildren(child => child.gameObject.SetActive(false));
+            foreach (var child in parent.Children()) {
+                child.gameObject.SetActive(false);
+            };
         }
-        
 
         private static void PerformActionOnChildren(this Transform parent, System.Action<Transform> action)
         {

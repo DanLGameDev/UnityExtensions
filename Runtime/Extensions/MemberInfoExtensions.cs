@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace DGP.UnityExtensions.Extensions
+namespace DGP.UnityExtensions
 {
     public static class MemberInfoExtensions
     {
