@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DGP.UnityExtensions.Helpers;
 
 namespace DGP.UnityExtensions
@@ -48,6 +49,27 @@ namespace DGP.UnityExtensions
             if (items == null || items.Count == 0) return default;
             var index = randomStream?.Range(0, items.Count) ?? UnityEngine.Random.Range(0, items.Count);
             return items[index];
+        }
+        
+        public static KeyValuePair<TKey, TValue> RandomItem<TKey, TValue>(this Dictionary<TKey, TValue> items, RandomStream randomStream = null)
+        {
+            if (items == null || items.Count == 0) return default;
+            var index = randomStream?.Range(0, items.Count) ?? UnityEngine.Random.Range(0, items.Count);
+            return items.ElementAt(index);
+        }
+        
+        public static TValue RandomValue<TKey, TValue>(this Dictionary<TKey, TValue> items, RandomStream randomStream = null)
+        {
+            if (items == null || items.Count == 0) return default;
+            var index = randomStream?.Range(0, items.Count) ?? UnityEngine.Random.Range(0, items.Count);
+            return items.Values.ElementAt(index);
+        }
+        
+        public static TKey RandomKey<TKey, TValue>(this Dictionary<TKey, TValue> items, RandomStream randomStream = null)
+        {
+            if (items == null || items.Count == 0) return default;
+            var index = randomStream?.Range(0, items.Count) ?? UnityEngine.Random.Range(0, items.Count);
+            return items.Keys.ElementAt(index);
         }
         
         /// <summary>
