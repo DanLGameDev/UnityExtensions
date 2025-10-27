@@ -27,6 +27,9 @@ namespace DGP.UnityExtensions.Helpers
         /// </summary>
         public RandomStream() 
             : this(UnityEngine.Random.Range(int.MinValue, int.MaxValue)) { }
+        
+        
+        public RandomStream CreateStreamWithSameSeed() => new(Seed);
 
         /// <summary>
         /// Resets the random stream with a new seed, allowing reproduction of the same sequence.
