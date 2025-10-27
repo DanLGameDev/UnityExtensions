@@ -65,6 +65,11 @@ namespace DGP.UnityExtensions.Helpers
         public bool CoinFlip => _random.Next(2) == 0;
         
         /// <summary>
+        /// Returns a random float between -1.0 (inclusive) and 1.0 (inclusive).
+        /// </summary>
+        public float ValueNegativeOneToOne => Range(-1f, 1f);
+        
+        /// <summary>
         /// Generates an array of random floats within the specified range.
         /// </summary>
         /// <param name="count">The number of random values to generate.</param>
@@ -88,7 +93,7 @@ namespace DGP.UnityExtensions.Helpers
         /// <param name="min">The inclusive lower bound.</param>
         /// <param name="max">The exclusive upper bound.</param>
         /// <returns>An array of random integers where min &lt;= value &lt; max.</returns>
-        public int[] RandomSequence(int count, int min, int max)
+        public int[] RandomIntegerSequence(int count, int min, int max)
         {
             int[] sequence = new int[count];
             for (int i = 0; i < count; i++)
