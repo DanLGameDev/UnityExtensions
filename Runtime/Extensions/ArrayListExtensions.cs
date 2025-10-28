@@ -51,6 +51,20 @@ namespace DGP.UnityExtensions
             return items[index];
         }
         
+        public static T RandomItem<T>(this IEnumerable<T> items, RandomStream randomStream = null)
+        {
+            if (items == null)
+                return default;
+            
+            var list = items as IList<T> ?? items.ToList();
+            
+            if (list.Count == 0)
+                return default;
+            
+            var index = randomStream?.Range(0, list.Count) ?? UnityEngine.Random.Range(0, list.Count);
+            return list[index];
+        }
+        
         public static KeyValuePair<TKey, TValue> RandomItem<TKey, TValue>(this Dictionary<TKey, TValue> items, RandomStream randomStream = null)
         {
             if (items == null || items.Count == 0) return default;
