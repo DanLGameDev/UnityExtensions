@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace _DGP.Gizmos
+namespace DGP.UnityExtensions.Editor
 {
     public static class UnityEventGizmos
     {
