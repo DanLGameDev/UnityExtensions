@@ -1,13 +1,15 @@
+using System;
+
 namespace DGP.UnityExtensions.Validation
 {
     /// <summary>
-    /// Interface for ScriptableObjects that map to enum values via string keys
+    /// Interface for ScriptableObjects that map to enum values
     /// </summary>
-    public interface IEnumMappedAsset
+    public interface IEnumMappedAsset<T> where T : Enum
     {
         /// <summary>
-        /// The unique key that matches an enum value
+        /// The enum value that this asset maps to
         /// </summary>
-        string EnumKey { get; }
+        T EnumValue { get; }
     }
 }

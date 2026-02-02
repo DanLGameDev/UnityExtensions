@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DGP.UnityExtensions.Editor.OdinValidators;
 using DGP.UnityExtensions.Validation;
 using Sirenix.OdinInspector.Editor.Validation;
@@ -33,77 +32,71 @@ namespace DGP.UnityExtensions.Editor.OdinValidators
             var attribute = (EnumMappedAssetAttribute)enumType.GetCustomAttributes(typeof(EnumMappedAssetAttribute), false)[0];
             var soType = attribute.ScriptableObjectType;
 
-            // Check if the SO implements IEnumMappedAsset
-            if (!typeof(IEnumMappedAsset).IsAssignableFrom(soType)) {
-                result.AddError($"Type {soType.Name} must implement IEnumMappedAsset");
+            // Check if the SO implements IEnumMappedAsset<T>
+            var expectedInterfaceType = typeof(IEnumMappedAsset<>).MakeGenericType(enumType);
+            if (!expectedInterfaceType.IsAssignableFrom(soType))
+            {
+                result.AddError($"Type {soType.Name} must implement IEnumMappedAsset<{enumType.Name}>");
                 return;
             }
 
-            // Get all enum values with their keys
-            var enumFields = enumType.GetFields(BindingFlags.Public | BindingFlags.Static);
-            var enumKeys = new Dictionary<string, string>(); // key -> enum value name
-            
-            foreach (var field in enumFields) {
-                var keyAttr = field.GetCustomAttribute<EnumKeyAttribute>();
-                if (keyAttr != null)
-                {
-                    enumKeys[keyAttr.Key] = field.Name;
-                } else {
-                    result.AddWarning($"Enum value {enumType.Name}.{field.Name} is missing [EnumKey] attribute");
-                }
-            }
+            // Get all enum values
+            var enumValues = Enum.GetValues(enumType).Cast<Enum>().ToList();
 
             // Find all ScriptableObject instances of the specified type
             var guids = AssetDatabase.FindAssets($"t:{soType.Name}");
             var assets = guids
                 .Select(guid => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), soType))
                 .Where(asset => asset != null)
-                .Cast<IEnumMappedAsset>()
                 .ToList();
 
-            // Track which keys have corresponding assets
-            var mappedKeys = new HashSet<string>();
-            var duplicateKeys = new Dictionary<string, List<string>>(); // key -> asset names
+            // Get the EnumValue property from the interface
+            var enumValueProperty = expectedInterfaceType.GetProperty("EnumValue");
+            if (enumValueProperty == null)
+            {
+                result.AddError($"Could not find EnumValue property on {soType.Name}");
+                return;
+            }
 
-            foreach (var asset in assets) {
-                var key = asset.EnumKey;
+            // Group assets by their enum value
+            var assetsByEnumValue = new Dictionary<Enum, List<UnityEngine.Object>>();
+            foreach (var asset in assets)
+            {
+                var enumValue = (Enum)enumValueProperty.GetValue(asset);
                 
-                if (string.IsNullOrEmpty(key)) {
-                    result.AddError($"Asset {((UnityEngine.Object)asset).name} has empty EnumKey");
-                    continue;
-                }
+                if (!assetsByEnumValue.ContainsKey(enumValue))
+                    assetsByEnumValue[enumValue] = new List<UnityEngine.Object>();
                 
-                if (!mappedKeys.Add(key)) {
-                    // Duplicate found
-                    if (!duplicateKeys.ContainsKey(key))
-                        duplicateKeys[key] = new List<string>();
-                    
-                    duplicateKeys[key].Add(((UnityEngine.Object)asset).name);
-                }
+                assetsByEnumValue[enumValue].Add((UnityEngine.Object)asset);
             }
 
-            // Report duplicates
-            foreach (var kvp in duplicateKeys) {
-                var duplicateAssets = string.Join(", ", kvp.Value);
-                var enumValueName = enumKeys.ContainsKey(kvp.Key) ? enumKeys[kvp.Key] : "unknown";
-                result.AddError($"Duplicate {soType.Name} instances found for key '{kvp.Key}' (enum: {enumValueName}): {duplicateAssets}");
+            // Check for duplicates
+            foreach (var kvp in assetsByEnumValue.Where(kvp => kvp.Value.Count > 1))
+            {
+                var duplicateAssets = string.Join(", ", kvp.Value.Select(a => a.name));
+                result.AddError($"Duplicate {soType.Name} instances found for {enumType.Name}.{kvp.Key}: {duplicateAssets}");
             }
 
-            // Find missing mappings
-            var missingKeys = enumKeys.Keys.Except(mappedKeys).ToList();
-            if (missingKeys.Any()) {
-                var missingInfo = string.Join(", ", missingKeys.Select(k => $"{enumKeys[k]} (key: '{k}')"));
-                result.AddError($"Missing {soType.Name} instances for enum values: {missingInfo}");
+            // Check for missing mappings
+            var mappedValues = assetsByEnumValue.Keys.ToHashSet();
+            var missingValues = enumValues.Where(ev => !mappedValues.Contains(ev)).ToList();
+            
+            if (missingValues.Any())
+            {
+                var missingInfo = string.Join(", ", missingValues.Select(ev => ev.ToString()));
+                result.AddError($"Missing {soType.Name} instances for {enumType.Name} values: {missingInfo}");
             }
 
-            // Find extra assets (assets with keys not in the enum)
-            var extraAssets = assets
-                .Where(asset => !enumKeys.ContainsKey(asset.EnumKey))
+            // Check for extra assets (assets with enum values not in the current enum definition)
+            var extraAssets = assetsByEnumValue
+                .Where(kvp => !enumValues.Contains(kvp.Key))
+                .SelectMany(kvp => kvp.Value)
                 .ToList();
             
-            if (extraAssets.Any()) {
-                var extraNames = string.Join(", ", extraAssets.Select(a => $"{((UnityEngine.Object)a).name} (key: '{a.EnumKey}')"));
-                result.AddWarning($"Found {soType.Name} instances with keys not in {enumType.Name}: {extraNames}");
+            if (extraAssets.Any())
+            {
+                var extraNames = string.Join(", ", extraAssets.Select(a => $"{a.name} (value: {enumValueProperty.GetValue(a)})"));
+                result.AddWarning($"Found {soType.Name} instances with enum values not in {enumType.Name}: {extraNames}");
             }
         }
     }
